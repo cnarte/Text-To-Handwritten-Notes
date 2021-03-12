@@ -26,7 +26,7 @@ print()
 print()
 
 FontType = "Fonts/Swagt_font/"
-writing = "Swagat"
+writing = "ASwaga"
 # Initializing x and y
 x, y = margin + 20, margin + lineGap
 
@@ -274,8 +274,8 @@ if __name__ == "__main__":
         pdf.output(pdf_name, "F")
         
         print("[+] Revoming unnecessary files")
-        for path in ImagesPath:
-            os.remove(path)        
+        # for path in ImagesPath:
+        #     os.remove(path)        
         
         
         print("[+] Done...")
