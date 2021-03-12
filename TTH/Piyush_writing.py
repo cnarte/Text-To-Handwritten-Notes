@@ -18,7 +18,7 @@ wordsPerLine = 96
 maxLenPerPage = 3349
 pageNum = 1
 
-writing = "Piyush"
+writing = "APiyush"
 FontType = "Fonts/Piyush_font/"
 
 print("#"*16, "WELCOME TO TEXT TO HANDWRITTEN NOTES", "#"*16)
@@ -85,7 +85,7 @@ def ProcessNwrite(word):
     if x > SheetWidth - wordsPerLine*len(word):
         newLine()
         
-    check_pageExceed()
+    Check_pageExceed()
                 
     path = FontType
     for letter in word:

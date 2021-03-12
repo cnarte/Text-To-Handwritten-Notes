@@ -213,8 +213,8 @@ if __name__ == "__main__":
             pdf.image(ImagesPath[i], 0, 0)
             
         print("[+] Revoming unnecessary files")
-        for path in ImagesPath:
-            os.remove(path)  
+        # for path in ImagesPath:
+        #     os.remove(path)  
           
         print("\n[+] Saving the pdf...")
         pdf_name = "PDF_outputs/{}_Output.pdf".format(writing)
