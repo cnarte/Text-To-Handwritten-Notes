@@ -177,7 +177,7 @@ def writeByLine(data):
 
 if __name__ == "__main__":    
     try:
-        filePath = "input.txt"
+        filePath = "Instruction Set.txt"
         file = open(filePath, "r")
         content = file.read()
         

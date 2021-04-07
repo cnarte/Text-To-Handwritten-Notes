@@ -112,13 +112,6 @@ section .text
 global _start
 _start:
 . ; Here is the where the program actually begins
-Linux System Calls (for 32 bit): (Write system calls that you are using)
-You can make use of Linux system calls in your assembly programs. You need to take the
-following steps for using Linux system calls in your program:
-1. Put the system call number in the EAX register.
-2. Store the arguments to the system call in the registers EBX, ECX, etc.
-3. Call the relevant interrupt (80h)
-4. The result is usually returned in the EAX register 
 
 The Linux System Calls – (SYSCALL for 64bit execution)
 Linux system calls are called in exactly the same way as DOS system calls:
@@ -126,3 +119,29 @@ Linux system calls are called in exactly the same way as DOS system calls:
 2. set up the arguments to the system call in RDI, RSI, RDX, etc.
 3. make a system call with “SYSCALL” instruction
 4. The result is usually returned in RAX 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+X86 Instruction Set: Write all the instructions of 80x86 architecture
+Eg: CMP ── Compare Two Operands
+Operation /Algorithm
+LeftSRC - SignExtend(RightSRC);
+(* CMP does not store a result; its purpose is to set the flags *)
+Description: CMP subtracts the second operand from the first but, unlike the SUB instruction,
+does not store the result; only the flags are changed.
+Flags Affected
+OF, SF, ZF, AF, PF, and CF

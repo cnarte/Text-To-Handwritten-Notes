@@ -26,7 +26,7 @@ print()
 print()
 
 FontType = "Fonts/myfont/"
-writing = "default"
+writing = "instruction_default_dot"
 # Initializing x and y
 x, y = margin + 20, margin + lineGap
 
@@ -173,7 +173,7 @@ def writeByLine(data):
 
 if __name__ == "__main__":    
     try:
-        filePath = "input.txt"
+        filePath = "Instruction Set.txt"
         file = open(filePath, "r")
         content = file.read()
         

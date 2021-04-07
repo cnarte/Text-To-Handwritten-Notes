@@ -1,0 +1,583 @@
+     Instruction Set
+
+Categories:
+    :: Data  transfer group
+    :: Arithmetic group
+    :: Bit manipulation group
+    :: String Instruction group
+    :: Program transfer instruction group
+    :: Process control instruction group
+        
+Data Transfer group
+    ::   General Purpose
+    ::   Input / Output
+    ::   Address Object
+    ::   Flag Transfer
+ 
+Data Transfer Group
+  ::   General Purpose
+                          
+        :: LAR
+        :: MOV
+        :: BSWAP
+        :: MOV CRn
+        :: POPA
+        :: MOV DRn
+        :: PUSHA
+        :: MOV TRn
+        :: POPAD
+        :: PUSH
+        :: POPD
+        :: POP
+        :: PUSHAD
+        :: XCHG
+        :: PUSHD
+        :: XLAT
+        :: MOVSX
+        :: MOVZX
+1. MOV
+::   MOV: copy a word or a byte or doubleword or quadword
+    to/from register/memory
+::   The MOV instruction cannot:
+    ::   set the value of the CS and IP registers.
+    ::   copy value of one segment register to another segment register (should
+        copy to general register first).
+    ::   copy immediate value to segment register (should copy to general
+        register first).
+
+::   Algorithm:
+    ::   operand1 = operand2
+
+
+MOVS
+::   Move string data
+
+
+    MOVSX
+::   Modifies flags: None
+::   Copies the value of the source operand to the destination register with the sign
+    extended.
+::   The source register or memory is 8/16 bits, while the destination register or memory is
+    16/32 bits
+MOVZX
+::   Modifies flags: None
+::   Copies the value of the source operand to the destination register with the zero
+    extended.
+::   The source register or memory is 8/16 bits, while the destination register or memory
+    is 16/32 bits
+
+PUSH
+::   Usage: PUSH src
+::   PUSH immed (80188+ only)
+::   Modifies flags: None
+::   Decrements SP by the size of the operand (two or four, byte values are sign
+    extended) and transfers one word from source to the stack top (SS:SP).
+
+PUSHA/PUSHAD
+::   Usage: PUSHA
+::   PUSHAD (386+)
+::   Modifies flags: None
+::   Pushes all general purpose registers onto the stack in the following order: (E)AX,
+    (E)CX, (E)DX, (E)BX, (E)SP, (E)BP, (E)SI, (E)DI. The value of SP is the value before the
+    actual push of SP.
+POP
+::   Usage: POP dest
+::   Modifies flags: None
+::   Transfers word at the current stack top (SS:SP) to the destination then
+    increments SP by two to point to the new stack top. CS is not a valid
+    destination.
+
+POPA/POPAD
+::   Usage: POPA
+::   POPAD (386+)
+::   Modifies flags: None
+::   Pops the top 8 words off the stack into the 8 general purpose 16/32 bit
+    registers. Registers are popped in the following order: (E)DI, (E)SI, (E)BP, (E)SP,
+    (E)DX, (E)CX and (E)AX. The (E)SP value popped from the stack is actually
+    discarded.
+
+    XCHG
+::   Usage: XCHG dest,src
+::   Modifies flags: None
+::   Exchanges contents of source and destination.
+
+XCHG
+
+XLAT/XLATB
+::   Usage: XLAT translation-table
+::   XLATB (masm 5.x)
+::   Modifies flags: None
+::   Replaces the byte in AL with byte from a user table addressed by BX. The original
+    value of AL is the index into the translate table. The best way to describe this is
+    MOV AL,[BX+AL]
+LAR - Load Access Rights (286+
+
+protected)
+::   Usage: LAR dest,src
+::   Modifies Flags: ZF
+::   The high byte of the of the destination register is overwritten by the value
+    of the access rights byte and the low order byte is zeroed depending on
+    the selection in the source operand. The Zero Flag is set if the load
+    operation is successful.
+BSWAP: Byte Swap (486+)
+
+
+
+::   Usage: BSWAP reg32
+::   Modifies flags: none
+::   Changes the byte order of a 32 bit register from
+    big endian to little endian or vice versa. Result left
+    in destination register is undefined if the operand is
+    a 16 bit register.
+
+
+Input/Output Instruction
+
+    ::   In
+    ::   OUT
+    ::   INS
+    ::   OUTS
+
+IN
+::   Usage: IN accum,port
+::   Modifies flags: None
+::   A byte, word or dword is read from "port" and placed in AL, AX or EAX
+    respectively. If the port number is in the range of 0-255 it can be specified as an
+    immediate, otherwise the port number must be specified in DX. Valid port ranges on
+    the PC are 0-1024, though values through 65535 may be specified and recognized
+    by third party vendors and PS/2's.
+    INS: Input String from Port (80188+)
+
+::   Usage: INS dest,port
+::   INSB
+::   INSW
+::   INSD (386+)
+::   Modifies flags: None
+::   Loads data from port to the destination ES:(E)DI (even if a destination operand
+    is supplied). (E)DI is adjusted by the size of the operand and increased if the
+    Direction Flag is cleared and decreased if the Direction Flag is set. For INSB,
+    INSW, INSD no operands are allowed and the size is determined by the
+    mnemonic.
+
+OUT
+::   Usage: OUT port,accum
+::   Modifies flags: None
+::   Transfers byte in AL, word in AX or dword in EAX to the specified hardware port
+    address. If the port number is in the range of 0-255 it can be specified as an
+    immediate. If greater than 255 then the port number must be specified in DX. Since
+    the PC only decodes 10 bits of the port address, values over 1023 can only be
+    decoded by third party vendor equipment and also map to the port range 0-1023.
+
+OUTS
+::   Usage: OUTS port,src
+::   OUTSB
+::   OUTSW
+::   OUTSD (386+)
+::   Modifies flags: None
+::   Transfers a byte, word or doubleword from "src" to the hardware port specified in
+    DX. For instructions with no operands the "src” is located at DS:SI and SI is
+    incremented or decremented by the size of the operand or the size dictated by the
+    instruction format. When the Direction Flag is set SI is decremented, when clear, SI is
+    incremented. If the port number is in the range of 0-255 it can be specified as an
+    immediate. If greater than 255 then the port number must be specified in DX. Since
+    the PC only decodes 10 bits of the port address, values over 1023 can only be
+    decoded by third party vendor equipment and also map to the port range 0-1023.
+
+Address Object
+::   These instructions manipulate the addresses of the
+    variables, rather than the contents of the variables.
+::   LEA
+::   LDS
+::   LES
+::   LFS
+::   LGS
+::   LSS
+
+LEA: Load Effective Address
+::   Usage: LEA dest,src
+::   Modifies Flags: None
+::   Transfers offset address of "src" to the destination register.
+
+LDS: Load pointer with DS
+
+LES: Load pointer using ES
+
+LFS,LGS,LSS
+::   LFS: Load pointer using FS
+::   LGS: Load pointer using GS
+::   LSS: Load pointer using SS
+
+
+Flag Transfer Instructions
+    ::   LAHF: Load AH Register from flags
+    ::   SAHF: Store AH Register in flags
+    ::   PUSHF/PUSHFD: Push flags on to stack
+    ::   POPF/POPFD: Pop flags off stack/ Pop Eflags off stack
+
+    LAHF: Load AH Register from flags
+
+    SAHF: Store AH Register in flags
+
+    PUSHF/PUSHFD: Push flags/Eflags on to stack
+
+    POPF/POPFD: Pop flags off stack/ Pop Eflags off stack
+
+    CMPXCHG: Compare and Exchange
+
+Arithmetic Instructions
+    ::   Addition
+    ::   Subtraction
+    ::   Multiplication
+    ::   Division
+
+Arithmetic Instructions: Addition
+::   ADD: Add byte or word or doubleword or
+    quadword
+::   ADC: Add byte or word or doubleword or
+    quadword with carry
+::   INC: Increment byte or word or doubleword or
+    quadword by 1
+::   AAA: ASCII adjust for addition
+::   DAA: Decimal adjust for addition
+ADD: Add byte or word
+
+ADC: Add byte or word with carry
+
+INC: Increment byte or word by 1
+
+AAA: ASCII adjust for addition
+
+DAA: Decimal adjust for addition
+
+Arithmetic Instructions: Subtraction
+::   SUB
+::   SBB
+::   DEC
+::   NEG
+::   AAS
+::   DAS
+::   CMP
+::   CMPXCHG: Compare and exchange
+::   CMPXCH8B: Compare and exchange 8 byte
+SUB: Subtract byte or word or
+
+doubleword or quadword
+SBB: Subtract byte or word or
+
+doubleword or quadword with borrow
+DEC: Decrement byte or word or
+
+doubleword or quadword by 1
+NEG: Negate byte or word or
+
+doubleword or quadword
+AAS: ASCII adjust after subtraction
+
+DAS: Decimal adjust after subtraction
+
+CMP: Compare byte or word or double word or quadword
+
+Arithmetic Instructions: Multiplication
+::   MUL
+::   IMUL
+::   AAM
+MUL: Multiply byte 0r word or doubleword or  quadword (unsigned)
+
+Multiplies AL, AX, EAX
+or RAX by a source
+operand. If the source
+is 8 bits, it is multiplied
+by AL and the product
+is stored in AX. If the
+source is 16 bits, it is
+multiplied by AX and
+the product is stored in
+DX:AX. If the source is
+32 bits, it is multiplied
+by EAX and the
+product is stored in
+EDX:EAX. If the source
+is 64 bits, it is multiplied
+by RAX and the
+product is stored in 	 RDX:RAX.
+
+IMUL: Multiply byte 0r word (signed)
+
+Performs a signed integer
+multiplication on AL, AX,
+EAX or RAX. If the
+multiplier is 8 bits, the
+multiplicand is AL and the
+product is AX. If the
+multiplier is 16 bits, the
+multiplicand is AX and the
+product is DX:AX. If the
+multiplier is 32 bits, the
+multiplicand is EAX and the
+product is EDX:EAX. The
+Carry and Overflow flags
+are set if a 16-bit product
+extends into AH, or a 32-bit
+product extends into DX, or
+a 64-bit product extends
+into EDX.
+AAM: ASCII Adjust after Multiplication
+
+Arithmetic Instructions: Division
+::   DIV
+::   IDIV
+::   AAD
+::   CBW
+::   CWD
+::   CWDE: Convert word to double word extended
+::   CDQ
+
+DIV: Unsigned Divide
+
+Performs either 8-, 16-,
+32-bit or 64-bit unsigned
+integer division. If the
+divisor is 8 bits, the
+dividend is AX, the
+quotient is AL, and the
+remainder is AH. If the
+divisor is 16 bits, the
+dividend is DX:AX, the
+quotient is AX, and the
+remainder is DX. If the
+divisor is 32 bits, the
+dividend is EDX:EAX,
+the quotient is EAX, and
+the remainder is EDX. If
+the divisor is 64 bits, the
+dividend is RDX:RAX,
+the quotient is RAX, and
+the remainder is RDX.
+
+IDIV: Signed Divide
+::   Performs a signed integer
+    division    operation     on
+    EDX:EAX, DX:AX, or AX. If
+    the divisor is 8 bits, the
+    dividend is AX, the quotient
+    is AL, and the remainder is
+    AH. If the divisor is 16 bits,
+    the dividend is DX:AX, the
+    quotient is AX, and the
+    remainder is DX. If the
+    divisor is 32 bits, the
+    dividend is EDX:EAX, the
+    quotient is EAX, and the
+    remainder is EDX. Usually
+    the IDIV operation is
+    prefaced by either CBW or
+    CWD to sign-extend the
+    dividend.
+AAD: ASCII Adjust before Division
+
+CBW: Convert byte into word
+
+CWD: Convert word to double
+
+CDQ: Convert doubleword to quadword
+
+
+Bit Manipulation Instruction
+    ::   Logical
+    ::   Shifts
+    ::   Rotates
+
+Logical Instructions
+::   NOT
+::   AND
+::   OR
+::   XOR
+::   TEST
+::   BT
+::   BTS
+::   BTR
+::   BTC
+::   BSF
+::   BSR
+::   SETcc
+NOT: Not byte or word or double word
+
+AND: And byte or word or double word
+
+OR: Inclusive Or byte or word or double word
+
+XOR: Exclusive Or byte or word or double word
+
+TEST: Test byte or word or double word
+
+BT: Bit Test
+
+BTS: Bit Test and Set
+
+BTS: Bit Test and Reset
+
+BTC: Bit Test and Complement
+
+BSF: Bit Scan Forward
+
+BSR: Bit Scan Reverse
+
+Shift Instructions
+::   SHL
+::   SAL
+::   SHR
+::   SAR
+::   SHLD
+::   SHRD
+
+SHL: Shift logical left byte or word or double word
+
+SAL: Shift arithmetic left byte or word or double word
+
+SHR: Shift logical right byte or word or double word
+
+SAR: Shift arithmetic right byte or word or double word
+
+SHLD: Double-Precision Shift Left (386+)
+
+SHLR: Double-Precision Shift Right(386+)
+
+Rotate Instructions
+::   ROL
+::   ROR
+::   RCL
+::   RCR
+
+ROL: Rotate Left
+
+ROR: Rotate Right
+
+RCL: Rotate through Carry Left
+
+RCR: Rotate through Carry Right
+
+String Instructions Group
+::   MOVSB/MOVSW/MOVSD
+::   CMPSB/CMPSW/CMPSD
+::   SCASB/SCASW/SCASD
+::   LOADSB/LOADSW/LOADSD
+::   STOSB/STOSW/STOSD
+::   REP
+::   REPE/REPZ
+::   REPNE/REPNZ
+
+Program Control ( or Branch) Group Instruction
+::   Unconditional Transfer
+::   Conditional Transfer
+::   Iteration Control
+::   Interrupts
+
+Process Control Instructions
+::   Flag Operations
+::   No Operation
+::   External Synchronization
+
+Flag Operations
+::   CLC
+::   STC
+::   CMC
+::   STD
+::   CLD
+::   STI
+::   CLI
+
+CLC: Clear Carry Flag
+
+STC: Set Carry Flag
+
+CMC: Complementary Carry Flag
+
+CLD: Clear Direction Flag
+
+STD: Set Direction Flag
+
+CLI: Clear Interrupt Flag
+
+STI: Set Interrupt Flag
+
+No Operation
+
+External Synchronization
+::   HLT
+::   WAIT
+::   ESC
+::   LOCK
+::   BOUND
+::   ENTER
+::   LEAVE
+
+HLT: Hlt until interrupt or reset
+
+WAIT: Wait till Interrupt
+
+ESC: Escape
+
+LOCK: Lock Bus during next Instruction
+
+BOUND: Check against array bound
+
+Unconditional Transfer
+::   CALL
+::   RET
+::   RETF
+::   JMP
+::   BOUND
+::   ENTER
+::   LEAVE
+
+CAL: Call a procedure
+
+RET: Return from procedure
+
+RETF: Return from far procedure
+
+Jxx: Jump Instructions (Conditional/Unconditional)
+
+Jxx: Jump Instructions (cont..)
+
+Iteration Control Instructions
+::   LOOP
+::   LOOPE/LOOPZ
+::   LOOPNE/LOOPNZ
+
+Interrupts
+::   INT
+::   INTO
+::   IRET
+
+INT: Interrupt
+
+INTO: Interrupt Overflow
+
+IRET: Interrupt Return
+
+Protected Mode Specific Instructions
+::   ARPL           ::   SIDT
+::   CLTS           ::   SLDT
+::   LAR            ::   SMSW
+::   LLDT           ::   STR
+::   LGDT           ::   VERR/VERW
+::   LIDT           ::   LTR
+::   LMSW           ::   LSL
+::   SGDT
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
