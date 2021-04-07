@@ -1,4 +1,6 @@
-                                   Study Assignment
+                                          Study Assignment
+
+
 Title: Introduction to Assembly Language Programming
 Aim: To study assembler, linker, masm, tasm and assembly language programming x86
 instructions set
